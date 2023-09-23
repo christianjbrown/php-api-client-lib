@@ -1,0 +1,19 @@
+{
+    "name": "christianjbrown/json-api-client",
+    "require": {
+        "php": "^8.2",
+        "guzzlehttp/guzzle": "^7.8",
+        "christianjbrown/user-friendly-exception": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "ChristianBrown\\JsonApiClient\\": "src/"
+        }
+    },
+    "repositories": [
+        {
+            "type": "github",
+            "url": "git@github.com:christianjbrown/user-friendly-exception.git"
+        }
+    ]
+}
