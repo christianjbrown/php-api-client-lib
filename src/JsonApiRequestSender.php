@@ -46,9 +46,12 @@ final class JsonApiRequestSender implements JsonApiRequestSenderInterface
 
     private function sendRequest(string $method, string $url, array $queryStrings = [], array $headers = [], ?string $body = null): array
     {
-        $queryStringsFlat = http_build_query($queryStrings, '', '&');
-        $urlWithQueryStrings = sprintf('%s?%s', $url, $queryStringsFlat);
-        $request = new Request($method, $urlWithQueryStrings, $headers, $body);
+        $finalUrl = $url;
+        if (!empty($queryStrings)) {
+            $queryStringsFlat = http_build_query($queryStrings, '', '&');
+            $finalUrl = sprintf('%s?%s', $url, $queryStringsFlat);
+        }
+        $request = new Request($method, $finalUrl, $headers, $body);
 
         try {
             $response = $this->guzzle->send($request);
