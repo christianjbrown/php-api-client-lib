@@ -1,19 +1,44 @@
 {
-    "name": "christianjbrown/json-api-client",
+    "name": "christianjbrown/php-json-api-client-lib",
+    "type": "library",
     "require": {
         "php": "^8.2",
-        "guzzlehttp/guzzle": "^7.8",
-        "christianjbrown/user-friendly-exception": "dev-main"
+        "guzzlehttp/guzzle": "^7.8"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0.8",
+        "christianjbrown/php-code-quality-scripts": "^1.0"
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "scripts": {
+        "test": [
+            "clear && XDEBUG_MODE=coverage ./bin/phpunit && open ./.phpunit.cache/code-coverage-html/index.html"
+        ],
+        "check-style": [
+            "clear && ./bin/php-cs ./src ./tests"
+        ],
+        "check-style-diff": [
+            "clear && ./bin/php-cs-diff"
+        ],
+        "fix-style": [
+            "clear && ./bin/php-cs-fix ./src ./tests"
+        ],
+        "fix-style-diff": [
+            "clear && ./bin/php-cs-fix-diff"
+        ]
     },
     "autoload": {
         "psr-4": {
-            "ChristianBrown\\JsonApiClient\\": "src/"
+            "ChristianBrown\\JsonApiClient\\": "src/",
+            "ChristianBrown\\JsonApiClient\\Tests\\": "tests/"
         }
     },
     "repositories": [
         {
             "type": "github",
-            "url": "git@github.com:christianjbrown/user-friendly-exception.git"
+            "url": "git@github.com:christianjbrown/php-code-quality-scripts.git"
         }
     ]
 }
