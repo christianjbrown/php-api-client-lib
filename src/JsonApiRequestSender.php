@@ -26,16 +26,25 @@ final class JsonApiRequestSender implements JsonApiRequestSenderInterface
         $this->guzzle = $guzzle;
     }
 
+    /**
+     * @throws JsonApiRequestException
+     */
     public function get(string $url, array $queryStrings = [], array $headers = []): array
     {
         return $this->sendRequest(self::METHOD_GET, $url, $queryStrings, $headers);
     }
 
+    /**
+     * @throws JsonApiRequestException
+     */
     public function post(string $url, array $queryStrings = [], array $headers = [], ?string $body = null): array
     {
         return $this->sendRequest(self::METHOD_POST, $url, $queryStrings, $headers, $body);
     }
 
+    /**
+     * @throws JsonApiRequestException
+     */
     public function postData(string $url, array $queryStrings = [], array $headers = [], array $bodyData = []): array
     {
         $body = http_build_query($bodyData, '', '&');
