@@ -13,9 +13,18 @@ interface JsonApiRequestSenderInterface
     public const METHOD_GET = 'GET';
     public const METHOD_POST = 'POST';
 
+    /**
+     * @throws JsonApiRequestExceptionInterface
+     */
     public function get(string $url, array $queryStrings = [], array $headers = []): array;
 
+    /**
+     * @throws JsonApiRequestExceptionInterface
+     */
     public function post(string $url, array $queryStrings = [], array $headers = [], ?string $body = null): array;
 
+    /**
+     * @throws JsonApiRequestExceptionInterface
+     */
     public function postData(string $url, array $queryStrings = [], array $headers = [], array $bodyData = []): array;
 }
