@@ -18,7 +18,6 @@ use ChristianBrown\ApiClient\Transformer\DataToArrayTransformerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\BadResponseException as GuzzleBadResponseException;
 use GuzzleHttp\Exception\ConnectException as GuzzleConnectException;
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\TooManyRedirectsException as GuzzleTooManyRedirectsException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -40,7 +39,6 @@ final class ApiRequestSenderTest extends TestCase
     /**
      * @throws ConnectException
      * @throws Exception
-     * @throws GuzzleException
      * @throws ParseJsonException
      * @throws ParseXmlException
      * @throws ResponseException
@@ -78,7 +76,6 @@ final class ApiRequestSenderTest extends TestCase
     /**
      * @throws ConnectException
      * @throws Exception
-     * @throws GuzzleException
      * @throws ParseJsonException
      * @throws ParseXmlException
      * @throws ResponseException
@@ -116,7 +113,6 @@ final class ApiRequestSenderTest extends TestCase
     /**
      * @throws ConnectException
      * @throws Exception
-     * @throws GuzzleException
      * @throws ParseJsonException
      * @throws ParseXmlException
      * @throws ResponseException
@@ -178,7 +174,6 @@ final class ApiRequestSenderTest extends TestCase
     /**
      * @throws ConnectException
      * @throws Exception
-     * @throws GuzzleException
      * @throws ParseJsonException
      * @throws ParseXmlException
      * @throws ResponseException
