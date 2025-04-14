@@ -1,6 +1,6 @@
-# Overview
+# API Client
 
-This is library provides a simple request client for JSON APIs. It is a wrapper around GuzzleHttp's `Client` class, that JSON decodes responses and provides a common exception to make it easier to catch and handle.
+This is library provides a simple request client for JSON and XML APIs. It is a wrapper around GuzzleHttp's `Client` class, that XML and JSON decodes responses back to an associative array, and provides common non-Guzzle specific exception classes to make it easier to catch and handle.
 
 
 
@@ -19,7 +19,7 @@ This is library provides a simple request client for JSON APIs. It is a wrapper 
 For your composer-enabled project:
 
 ```bash
-composer require christianjbrown/php-json-api-client-lib
+composer require christianjbrown/php-api-client-lib
 ```
 
 
@@ -30,57 +30,79 @@ composer require christianjbrown/php-json-api-client-lib
 
 ## Setup
 
+
+
 ```php
-use ChristianBrown\JsonApiClient\JsonApiRequestSender;
+use ChristianBrown\ApiClient\ApiRequestSender;
+use ChristianBrown\ApiClient\Model\ApiFormat;
+use ChristianBrown\ApiClient\Transformer\JsonToArrayTransformer;
 use GuzzleHttp\Client;
 
 $guzzleClient = new Client();
-$jsonApiRequestSender = new JsonApiRequestSender($guzzleClient);
+$jsonToArrayTransformer = new JsonToArrayTransformer();
+$apiRequestSender = new ApiRequestSender($guzzleClient, $jsonToArrayTransformer);
 ```
 
-Dependency injection be used to reduce the lines of code above.
-
-
-
-## Post examples
-
-If you need to `POST` JSON data to a JSON API endpoint, use `postData` like -
+Alternatively -
 
 ```php
-use ChristianBrown\JsonApiClient\JsonApiRequestExceptionInterface;
+use ChristianBrown\ApiClient\ApiClient;
+
+$apiClient = new ApiClient();
+$apiRequestSender = $apiClient->getApiSenderForJson();
+```
+
+XML is also supported.
+
+
+
+## `POST` examples
+
+
+
+If you need to `POST` array data as JSON or XML to a JSON or XML API endpoint, use `postData` like -
+
+```php
+use ChristianBrown\ApiClient\Exception\ExceptionInterface;
 
 try {
-    $data = $jsonApiRequestSender->postData('url', ['query-string-1-key' => 'query-string-1-value'], [], ['body-key-1' => 'body-value-1']);
-} catch (JsonApiRequestExceptionInterface $e) {
+    $data = $apiRequestSender->postData('url', ['query-string-1-key' => 'query-string-1-value'], [], ['body-key-1' => 'body-value-1']);
+} catch (ExceptionInterface $e) {
     print $e->getMessage();
 }
 ```
 
-If you need to `POST` key-value pair data to a JSON API endpoint, use `post` like -
+
+
+If you need to `POST` raw data to an API endpoint, use `post` like -
 
 ```php
-use ChristianBrown\JsonApiClient\JsonApiRequestExceptionInterface;
+use ChristianBrown\ApiClient\Exception\ExceptionInterface;
 
 try {
-    $data = $jsonApiRequestSender->postData('url', ['query-string-1-key' => 'query-string-1-value'], [], 'body-key-1=body-value-1');
-} catch (JsonApiRequestExceptionInterface $e) {
+    $data = $apiRequestSender->post('url', ['query-string-1-key' => 'query-string-1-value'], [], 'body-key-1=body-value-1');
+} catch (ExceptionInterface $e) {
     print $e->getMessage();
 }
 ```
 
 
 
-## Get example
+## `GET` example
 
-If you need to `GET` a JSON API endpoint, use `get` like -
+
+
+If you need to `GET` data from an API endpoint, use `get` like -
 
 ```php
-use ChristianBrown\JsonApiClient\JsonApiRequestExceptionInterface;
+use ChristianBrown\ApiClient\Exception\ExceptionInterface;
 
 try {
-    $data = $jsonApiRequestSender->get('url', ['query-string-1-key' => 'query-string-1-value'], []);
-} catch (JsonApiRequestExceptionInterface $e) {
+    $data = $apiRequestSender->get('url', ['query-string-1-key' => 'query-string-1-value'], []);
+} catch (ExceptionInterface $e) {
     print $e->getMessage();
 }
 ```
+
+
 
