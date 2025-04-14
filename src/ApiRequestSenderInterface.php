@@ -9,7 +9,6 @@ use ChristianBrown\ApiClient\Exception\Parse\ParseXmlException;
 use ChristianBrown\ApiClient\Exception\Request\ConnectException;
 use ChristianBrown\ApiClient\Exception\Response\ResponseException;
 use ChristianBrown\ApiClient\Exception\Response\TooManyRedirectsException;
-use GuzzleHttp\Exception\GuzzleException;
 
 interface ApiRequestSenderInterface
 {
@@ -19,7 +18,6 @@ interface ApiRequestSenderInterface
 
     /**
      * @throws ConnectException
-     * @throws GuzzleException
      * @throws ParseJsonException
      * @throws ParseXmlException
      * @throws ResponseException
@@ -29,7 +27,6 @@ interface ApiRequestSenderInterface
 
     /**
      * @throws ConnectException
-     * @throws GuzzleException
      * @throws ParseJsonException
      * @throws ParseXmlException
      * @throws ResponseException
@@ -39,7 +36,6 @@ interface ApiRequestSenderInterface
 
     /**
      * @throws ConnectException
-     * @throws GuzzleException
      * @throws ParseJsonException
      * @throws ParseXmlException
      * @throws ResponseException
