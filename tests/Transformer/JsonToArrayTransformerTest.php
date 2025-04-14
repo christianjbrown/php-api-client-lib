@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace ChristianBrown\ApiClient\Tests\Transformer;
 
+use ChristianBrown\ApiClient\Exception\AbstractException;
+use ChristianBrown\ApiClient\Exception\Parse\AbstractParseException;
+use ChristianBrown\ApiClient\Exception\Parse\ParseJsonException;
 use ChristianBrown\ApiClient\Exception\Parse\ParseJsonExceptionInterface;
 use ChristianBrown\ApiClient\Transformer\JsonToArrayTransformer;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -12,7 +15,10 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
+#[CoversClass(AbstractException::class)]
+#[CoversClass(AbstractParseException::class)]
 #[CoversClass(JsonToArrayTransformer::class)]
+#[CoversClass(ParseJsonException::class)]
 final class JsonToArrayTransformerTest extends TestCase
 {
     /**

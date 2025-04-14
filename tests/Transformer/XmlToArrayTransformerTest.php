@@ -6,6 +6,7 @@ namespace ChristianBrown\ApiClient\Tests\Transformer;
 
 use ChristianBrown\ApiClient\Exception\AbstractException;
 use ChristianBrown\ApiClient\Exception\Parse\AbstractParseException;
+use ChristianBrown\ApiClient\Exception\Parse\ParseXmlException;
 use ChristianBrown\ApiClient\Exception\Parse\ParseXmlExceptionInterface;
 use ChristianBrown\ApiClient\Transformer\JsonToArrayTransformerInterface;
 use ChristianBrown\ApiClient\Transformer\XmlToArrayTransformer;
@@ -17,6 +18,7 @@ use Psr\Http\Message\ResponseInterface;
 
 #[CoversClass(AbstractException::class)]
 #[CoversClass(AbstractParseException::class)]
+#[CoversClass(ParseXmlException::class)]
 #[CoversClass(XmlToArrayTransformer::class)]
 final class XmlToArrayTransformerTest extends TestCase
 {
