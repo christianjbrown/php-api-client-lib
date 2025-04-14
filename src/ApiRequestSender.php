@@ -13,7 +13,6 @@ use ChristianBrown\ApiClient\Transformer\DataToArrayTransformerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\BadResponseException as GuzzleBadResponseException;
 use GuzzleHttp\Exception\ConnectException as GuzzleConnectException;
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\TooManyRedirectsException as GuzzleTooManyRedirectsException;
 use GuzzleHttp\Psr7\Request;
 
@@ -33,7 +32,6 @@ final class ApiRequestSender implements ApiRequestSenderInterface
 
     /**
      * @throws ConnectException
-     * @throws GuzzleException
      * @throws ParseJsonException
      * @throws ParseXmlException
      * @throws ResponseException
@@ -46,7 +44,6 @@ final class ApiRequestSender implements ApiRequestSenderInterface
 
     /**
      * @throws ConnectException
-     * @throws GuzzleException
      * @throws ParseJsonException
      * @throws ParseXmlException
      * @throws ResponseException
@@ -59,7 +56,6 @@ final class ApiRequestSender implements ApiRequestSenderInterface
 
     /**
      * @throws ConnectException
-     * @throws GuzzleException
      * @throws ParseJsonException
      * @throws ParseXmlException
      * @throws ResponseException
@@ -75,7 +71,6 @@ final class ApiRequestSender implements ApiRequestSenderInterface
 
     /**
      * @throws ConnectException
-     * @throws GuzzleException
      * @throws ParseJsonException
      * @throws ParseXmlException
      * @throws ResponseException
