@@ -14,7 +14,6 @@ use ChristianBrown\ApiClient\Exception\Response\ResponseException;
 use ChristianBrown\ApiClient\Exception\Response\ResponseExceptionInterface;
 use ChristianBrown\ApiClient\Exception\Response\TooManyRedirectsException;
 use ChristianBrown\ApiClient\Exception\Response\TooManyRedirectsExceptionInterface;
-use ChristianBrown\ApiClient\Model\ApiFormat;
 use ChristianBrown\ApiClient\Transformer\DataToArrayTransformerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\BadResponseException as GuzzleBadResponseException;
