@@ -55,4 +55,18 @@ final class JsonApiRequestSender implements JsonApiRequestSenderInterface
 
         return $doc;
     }
+
+    /**
+     * @throws ConnectExceptionInterface
+     * @throws ParseJsonExceptionInterface
+     * @throws BadResponseExceptionInterface
+     * @throws TooManyRedirectsExceptionInterface
+     */
+    public function postForm(string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = [], array $requestBodyFormData = []): array
+    {
+        $contents = $this->apiRequestSender->postForm($requestUrl, $requestQueryStrings, $requestHeaders, $requestBodyFormData);
+        $doc = $this->responseTransformer->transform($contents, ApiRequestSenderInterface::METHOD_POST, $requestUrl, $requestQueryStrings);
+
+        return $doc;
+    }
 }
