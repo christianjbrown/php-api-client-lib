@@ -10,8 +10,6 @@ use LibXMLError;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 use function implode;
 use function sprintf;
@@ -19,21 +17,19 @@ use function sprintf;
 #[CoversClass(ParseXmlException::class)]
 final class ParseXmlExceptionTest extends TestCase
 {
-    /**
-     * @throws Exception
-     */
     public function testEmptyErrors(): void
     {
-        $request = $this->createMock(RequestInterface::class);
-        $response = $this->createMock(ResponseInterface::class);
         $errors = [];
 
-        $exception = new ParseXmlException($request, $response, $errors);
-        self::assertSame($request, $exception->getRequest());
-        self::assertSame($response, $exception->getResponse());
+        $exception = new ParseXmlException($errors, 'test-method', 'test-url', ['test-query-string' => 'test-value']);
         self::assertSame($errors, $exception->getErrors());
+        self::assertSame('test-method', $exception->getMethod());
+        self::assertSame('test-url', $exception->getUrl());
+        self::assertSame(['test-query-string' => 'test-value'], $exception->getQueryStrings());
         $expectedMessage = sprintf(
             ParseXmlExceptionInterface::MESSAGE_SPRINTF,
+            'test-method',
+            'test-url',
             implode(ParseXmlExceptionInterface::MESSAGE_ERRORS_SEP, [])
         );
         self::assertSame($expectedMessage, $exception->getMessage());
@@ -44,8 +40,6 @@ final class ParseXmlExceptionTest extends TestCase
      */
     public function testMultipleErrors(): void
     {
-        $request = $this->createMock(RequestInterface::class);
-        $response = $this->createMock(ResponseInterface::class);
         $error1 = $this->createMock(LibXMLError::class);
         $error1->line = 42;
         $error1->message = 'test-error-1';
@@ -54,10 +48,12 @@ final class ParseXmlExceptionTest extends TestCase
         $error2->message = 'test-error-2';
         $errors = [$error1, $error2];
 
-        $exception = new ParseXmlException($request, $response, $errors);
-        self::assertSame($request, $exception->getRequest());
-        self::assertSame($response, $exception->getResponse());
+        $exception = new ParseXmlException($errors, 'test-method', 'test-url', ['test-query-string' => 'test-value']);
         self::assertSame($errors, $exception->getErrors());
+        self::assertSame('test-method', $exception->getMethod());
+        self::assertSame('test-url', $exception->getUrl());
+        self::assertSame(['test-query-string' => 'test-value'], $exception->getQueryStrings());
+
         $errorsMessages = [];
         foreach ($errors as $error) {
             $errorsMessages[] = sprintf(
@@ -68,26 +64,27 @@ final class ParseXmlExceptionTest extends TestCase
         }
         $expectedMessage = sprintf(
             ParseXmlExceptionInterface::MESSAGE_SPRINTF,
+            'test-method',
+            'test-url',
             implode(ParseXmlExceptionInterface::MESSAGE_ERRORS_SEP, $errorsMessages)
         );
         self::assertSame($expectedMessage, $exception->getMessage());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testNotErrors(): void
     {
-        $request = $this->createMock(RequestInterface::class);
-        $response = $this->createMock(ResponseInterface::class);
         $errors = ['test-not-a-libxml-error'];
 
-        $exception = new ParseXmlException($request, $response, $errors);
-        self::assertSame($request, $exception->getRequest());
-        self::assertSame($response, $exception->getResponse());
+        $exception = new ParseXmlException($errors, 'test-method', 'test-url', ['test-query-string' => 'test-value']);
         self::assertSame([], $exception->getErrors());
+        self::assertSame('test-method', $exception->getMethod());
+        self::assertSame('test-url', $exception->getUrl());
+        self::assertSame(['test-query-string' => 'test-value'], $exception->getQueryStrings());
+
         $expectedMessage = sprintf(
             ParseXmlExceptionInterface::MESSAGE_SPRINTF,
+            'test-method',
+            'test-url',
             implode(ParseXmlExceptionInterface::MESSAGE_ERRORS_SEP, [])
         );
         self::assertSame($expectedMessage, $exception->getMessage());
@@ -98,17 +95,17 @@ final class ParseXmlExceptionTest extends TestCase
      */
     public function testSingleError(): void
     {
-        $request = $this->createMock(RequestInterface::class);
-        $response = $this->createMock(ResponseInterface::class);
         $error1 = $this->createMock(LibXMLError::class);
         $error1->line = 42;
         $error1->message = 'test-error-1';
         $errors = [$error1];
 
-        $exception = new ParseXmlException($request, $response, $errors);
-        self::assertSame($request, $exception->getRequest());
-        self::assertSame($response, $exception->getResponse());
+        $exception = new ParseXmlException($errors, 'test-method', 'test-url', ['test-query-string' => 'test-value']);
         self::assertSame($errors, $exception->getErrors());
+        self::assertSame('test-method', $exception->getMethod());
+        self::assertSame('test-url', $exception->getUrl());
+        self::assertSame(['test-query-string' => 'test-value'], $exception->getQueryStrings());
+
         $errorsMessages = [];
         foreach ($errors as $error) {
             $errorsMessages[] = sprintf(
@@ -119,6 +116,8 @@ final class ParseXmlExceptionTest extends TestCase
         }
         $expectedMessage = sprintf(
             ParseXmlExceptionInterface::MESSAGE_SPRINTF,
+            'test-method',
+            'test-url',
             implode(ParseXmlExceptionInterface::MESSAGE_ERRORS_SEP, $errorsMessages)
         );
         self::assertSame($expectedMessage, $exception->getMessage());

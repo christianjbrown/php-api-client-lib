@@ -9,7 +9,7 @@ use Psr\Http\Message\RequestInterface;
 
 use function sprintf;
 
-final class ResponseException extends AbstractResponseException implements ResponseExceptionInterface
+final class BadResponseException extends AbstractResponseException implements BadResponseExceptionInterface
 {
     public function __construct(RequestInterface $request, GuzzleBadResponseException $exception)
     {

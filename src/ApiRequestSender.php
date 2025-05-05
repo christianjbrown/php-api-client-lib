@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace ChristianBrown\ApiClient;
 
-use ChristianBrown\ApiClient\Exception\Parse\ParseJsonException;
-use ChristianBrown\ApiClient\Exception\Parse\ParseXmlException;
 use ChristianBrown\ApiClient\Exception\Request\ConnectException;
-use ChristianBrown\ApiClient\Exception\Response\ResponseException;
+use ChristianBrown\ApiClient\Exception\Response\BadResponseException;
 use ChristianBrown\ApiClient\Exception\Response\TooManyRedirectsException;
-use ChristianBrown\ApiClient\Transformer\DataToArrayTransformerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\BadResponseException as GuzzleBadResponseException;
 use GuzzleHttp\Exception\ConnectException as GuzzleConnectException;
@@ -22,84 +19,72 @@ use function sprintf;
 final class ApiRequestSender implements ApiRequestSenderInterface
 {
     private ClientInterface $guzzle;
-    private DataToArrayTransformerInterface $responseTransformer;
 
-    public function __construct(ClientInterface $guzzle, DataToArrayTransformerInterface $responseTransformer)
+    public function __construct(ClientInterface $guzzle)
     {
         $this->guzzle = $guzzle;
-        $this->responseTransformer = $responseTransformer;
     }
 
     /**
      * @throws ConnectException
-     * @throws ParseJsonException
-     * @throws ParseXmlException
-     * @throws ResponseException
+     * @throws BadResponseException
      * @throws TooManyRedirectsException
      */
-    public function get(string $url, array $queryStrings = [], array $headers = []): array
+    public function get(string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = []): string
     {
-        return $this->sendRequest(self::METHOD_GET, $url, $queryStrings, $headers);
+        return $this->sendRequest(self::METHOD_GET, $requestUrl, $requestQueryStrings, $requestHeaders);
     }
 
     /**
      * @throws ConnectException
-     * @throws ParseJsonException
-     * @throws ParseXmlException
-     * @throws ResponseException
+     * @throws BadResponseException
      * @throws TooManyRedirectsException
      */
-    public function post(string $url, array $queryStrings = [], array $headers = [], ?string $body = null): array
+    public function post(string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = [], ?string $requestBody = null): string
     {
-        return $this->sendRequest(self::METHOD_POST, $url, $queryStrings, $headers, $body);
+        return $this->sendRequest(self::METHOD_POST, $requestUrl, $requestQueryStrings, $requestHeaders, $requestBody);
     }
 
     /**
      * @throws ConnectException
-     * @throws ParseJsonException
-     * @throws ParseXmlException
-     * @throws ResponseException
+     * @throws BadResponseException
      * @throws TooManyRedirectsException
      */
-    public function postData(string $url, array $queryStrings = [], array $headers = [], array $bodyData = []): array
+    public function postData(string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = [], array $requestBodyData = []): string
     {
-        $body = http_build_query($bodyData, '', '&');
-        $data = $this->post($url, $queryStrings, $headers, $body);
+        $requestBody = http_build_query($requestBodyData, '', '&');
+        $data = $this->post($requestUrl, $requestQueryStrings, $requestHeaders, $requestBody);
 
         return $data;
     }
 
     /**
      * @throws ConnectException
-     * @throws ParseJsonException
-     * @throws ParseXmlException
-     * @throws ResponseException
+     * @throws BadResponseException
      * @throws TooManyRedirectsException
      */
-    private function sendRequest(string $method, string $url, array $queryStrings = [], array $headers = [], ?string $body = null): array
+    private function sendRequest(string $method, string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = [], ?string $requestBody = null): string
     {
-        $finalUrl = $url;
-        if (!empty($queryStrings)) {
-            $queryStringsFlat = http_build_query($queryStrings, '', '&');
-            $finalUrl = sprintf('%s?%s', $url, $queryStringsFlat);
+        $finalUrl = $requestUrl;
+        if (!empty($requestQueryStrings)) {
+            $requestQueryStringsFlat = http_build_query($requestQueryStrings, '', '&');
+            $finalUrl = sprintf('%s?%s', $requestUrl, $requestQueryStringsFlat);
         }
-        $request = new Request($method, $finalUrl, $headers, $body);
+        $request = new Request($method, $finalUrl, $requestHeaders, $requestBody);
 
         try {
             $response = $this->guzzle->send($request);
         } catch (GuzzleConnectException $exception) {
             throw new ConnectException($request, $exception);
         } catch (GuzzleBadResponseException $exception) {
-            throw new ResponseException($request, $exception);
+            throw new BadResponseException($request, $exception);
         } catch (GuzzleTooManyRedirectsException $exception) {
             throw new TooManyRedirectsException($request, $exception);
         }
 
-        $body = $response->getBody();
-        $contents = $body->getContents();
+        $requestBody = $response->getBody();
+        $contents = $requestBody->getContents();
 
-        $data = $this->responseTransformer->transform($contents, $request, $response);
-
-        return $data;
+        return $contents;
     }
 }

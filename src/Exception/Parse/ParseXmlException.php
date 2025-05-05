@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace ChristianBrown\ApiClient\Exception\Parse;
 
 use LibXMLError;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 use function implode;
 use function sprintf;
@@ -18,15 +16,15 @@ final class ParseXmlException extends AbstractParseException implements ParseXml
      */
     private array $errors = [];
 
-    public function __construct(RequestInterface $request, ResponseInterface $response, array $errors)
+    public function __construct(array $errors, string $method, string $requestUrl, ?array $requestQueryStrings = [])
     {
         foreach ($errors as $error) {
             if ($error instanceof LibXMLError) {
                 $this->errors[] = $error;
             }
         }
-        $message = self::generateMessage($this->errors);
-        parent::__construct($request, $response, $message);
+        $message = self::generateMessage($this->errors, $method, $requestUrl);
+        parent::__construct($message, $method, $requestUrl, $requestQueryStrings);
     }
 
     public function getErrors(): array
@@ -34,7 +32,7 @@ final class ParseXmlException extends AbstractParseException implements ParseXml
         return $this->errors;
     }
 
-    private static function generateMessage(array $errors): string
+    private function generateMessage(array $errors, string $method, string $requestUrl): string
     {
         $errorMessages = [];
         foreach ($errors as $error) {
@@ -47,6 +45,8 @@ final class ParseXmlException extends AbstractParseException implements ParseXml
 
         $message = sprintf(
             self::MESSAGE_SPRINTF,
+            $method,
+            $requestUrl,
             implode(self::MESSAGE_ERRORS_SEP, $errorMessages)
         );
 

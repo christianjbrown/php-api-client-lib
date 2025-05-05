@@ -4,42 +4,33 @@ declare(strict_types=1);
 
 namespace ChristianBrown\ApiClient;
 
-use ChristianBrown\ApiClient\Exception\Parse\ParseJsonException;
-use ChristianBrown\ApiClient\Exception\Parse\ParseXmlException;
 use ChristianBrown\ApiClient\Exception\Request\ConnectException;
-use ChristianBrown\ApiClient\Exception\Response\ResponseException;
+use ChristianBrown\ApiClient\Exception\Response\BadResponseException;
 use ChristianBrown\ApiClient\Exception\Response\TooManyRedirectsException;
 
 interface ApiRequestSenderInterface
 {
     public const string METHOD_GET = 'GET';
     public const string METHOD_POST = 'POST';
-    public const string METHOD_PUT = 'PUT';
 
     /**
      * @throws ConnectException
-     * @throws ParseJsonException
-     * @throws ParseXmlException
-     * @throws ResponseException
+     * @throws BadResponseException
      * @throws TooManyRedirectsException
      */
-    public function get(string $url, array $queryStrings = [], array $headers = []): array;
+    public function get(string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = []): string;
 
     /**
      * @throws ConnectException
-     * @throws ParseJsonException
-     * @throws ParseXmlException
-     * @throws ResponseException
+     * @throws BadResponseException
      * @throws TooManyRedirectsException
      */
-    public function post(string $url, array $queryStrings = [], array $headers = [], ?string $body = null): array;
+    public function post(string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = [], ?string $requestBody = null): string;
 
     /**
      * @throws ConnectException
-     * @throws ParseJsonException
-     * @throws ParseXmlException
-     * @throws ResponseException
+     * @throws BadResponseException
      * @throws TooManyRedirectsException
      */
-    public function postData(string $url, array $queryStrings = [], array $headers = [], array $bodyData = []): array;
+    public function postData(string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = [], array $requestBodyData = []): string;
 }

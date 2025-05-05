@@ -8,28 +8,21 @@ use ChristianBrown\ApiClient\Exception\Parse\ParseJsonException;
 use ChristianBrown\ApiClient\Exception\Parse\ParseJsonExceptionInterface;
 use JsonException;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 #[CoversClass(ParseJsonException::class)]
 final class ParseJsonExceptionTest extends TestCase
 {
-    /**
-     * @throws Exception
-     */
     public function test(): void
     {
-        $request = $this->createMock(RequestInterface::class);
-        $response = $this->createMock(ResponseInterface::class);
         $jsonException = new JsonException('test-error-message');
 
-        $exception = new ParseJsonException($request, $response, $jsonException);
-        self::assertSame($request, $exception->getRequest());
-        self::assertSame($response, $exception->getResponse());
+        $exception = new ParseJsonException($jsonException, 'test-method', 'test-url', ['test-query-string' => 'test-value']);
         self::assertSame($jsonException, $exception->getJsonException());
         self::assertSame($jsonException, $exception->getPrevious());
-        self::assertSame(sprintf(ParseJsonExceptionInterface::MESSAGE, 'test-error-message'), $exception->getMessage());
+        self::assertSame('test-method', $exception->getMethod());
+        self::assertSame('test-url', $exception->getUrl());
+        self::assertSame(['test-query-string' => 'test-value'], $exception->getQueryStrings());
+        self::assertSame(sprintf(ParseJsonExceptionInterface::MESSAGE_SPRINTF, 'test-method', 'test-url', 'test-error-message'), $exception->getMessage());
     }
 }

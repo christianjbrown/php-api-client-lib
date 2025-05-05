@@ -4,6 +4,7 @@
     "require": {
         "php": "^8.3",
         "guzzlehttp/guzzle": "^7.9",
+        "ext-dom": "*",
         "ext-simplexml": "*",
         "ext-libxml": "*",
         "symfony/dependency-injection": "^7.2"

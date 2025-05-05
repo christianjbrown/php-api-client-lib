@@ -4,23 +4,36 @@ declare(strict_types=1);
 
 namespace ChristianBrown\ApiClient\Exception\Parse;
 
-use ChristianBrown\ApiClient\Exception\AbstractException;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
 use Throwable;
 
-abstract class AbstractParseException extends AbstractException implements ParseExceptionInterface
+abstract class AbstractParseException extends RuntimeException implements ParseExceptionInterface
 {
-    private ResponseInterface $response;
+    protected string $method;
+    protected ?array $queryStrings = null;
+    protected string $url;
 
-    public function __construct(RequestInterface $request, ResponseInterface $response, string $message, ?Throwable $previous = null)
+    public function __construct(string $message, string $method, string $requestUrl, ?array $requestQueryStrings = [], ?Throwable $previous = null)
     {
-        parent::__construct($request, $message, $previous);
-        $this->response = $response;
+        $this->method = $method;
+        $this->url = $requestUrl;
+        $this->queryStrings = $requestQueryStrings;
+
+        parent::__construct($message, 0, $previous);
     }
 
-    final public function getResponse(): ResponseInterface
+    final public function getMethod(): string
     {
-        return $this->response;
+        return $this->method;
+    }
+
+    final public function getQueryStrings(): ?array
+    {
+        return $this->queryStrings;
+    }
+
+    final public function getUrl(): string
+    {
+        return $this->url;
     }
 }

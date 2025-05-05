@@ -9,7 +9,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
-abstract class AbstractResponseException extends AbstractException implements AbstractResponseExceptionInterface
+abstract class AbstractResponseException extends AbstractException implements ResponseExceptionInterface
 {
     private ResponseInterface $response;
 

@@ -33,26 +33,14 @@ composer require christianjbrown/php-api-client-lib
 
 
 ```php
-use ChristianBrown\ApiClient\ApiRequestSender;
-use ChristianBrown\ApiClient\Model\ApiFormat;
-use ChristianBrown\ApiClient\Transformer\JsonToArrayTransformer;
-use GuzzleHttp\Client;
-
-$guzzleClient = new Client();
-$jsonToArrayTransformer = new JsonToArrayTransformer();
-$apiRequestSender = new ApiRequestSender($guzzleClient, $jsonToArrayTransformer);
-```
-
-Alternatively -
-
-```php
 use ChristianBrown\ApiClient\ApiClient;
 
 $apiClient = new ApiClient();
-$apiRequestSender = $apiClient->getApiSenderForJson();
-```
+$jsonApiRequestSender = $apiClient->getJsonApiRequestSender();
 
-XML is also supported.
+// or, for XML use
+// $xmlApiRequestSender = $apiClient->getXmlApiRequestSender();
+```
 
 
 
@@ -60,27 +48,13 @@ XML is also supported.
 
 
 
-If you need to `POST` array data as JSON or XML to a JSON or XML API endpoint, use `postData` like -
+If you need to `POST` an API endpoint, use `post` like -
 
 ```php
 use ChristianBrown\ApiClient\Exception\ExceptionInterface;
 
 try {
-    $data = $apiRequestSender->postData('url', ['query-string-1-key' => 'query-string-1-value'], [], ['body-key-1' => 'body-value-1']);
-} catch (ExceptionInterface $e) {
-    print $e->getMessage();
-}
-```
-
-
-
-If you need to `POST` raw data to an API endpoint, use `post` like -
-
-```php
-use ChristianBrown\ApiClient\Exception\ExceptionInterface;
-
-try {
-    $data = $apiRequestSender->post('url', ['query-string-1-key' => 'query-string-1-value'], [], 'body-key-1=body-value-1');
+    $data = $jsonApiRequestSender->post('url', ['query-string-1-key' => 'query-string-1-value'], [], ['body-key-1' => 'body-value-1']);
 } catch (ExceptionInterface $e) {
     print $e->getMessage();
 }
@@ -98,7 +72,7 @@ If you need to `GET` data from an API endpoint, use `get` like -
 use ChristianBrown\ApiClient\Exception\ExceptionInterface;
 
 try {
-    $data = $apiRequestSender->get('url', ['query-string-1-key' => 'query-string-1-value'], []);
+    $data = $jsonApiRequestSender->get('url', ['query-string-1-key' => 'query-string-1-value'], []);
 } catch (ExceptionInterface $e) {
     print $e->getMessage();
 }
