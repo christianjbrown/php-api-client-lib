@@ -26,4 +26,12 @@ interface JsonApiRequestSenderInterface
      * @throws TooManyRedirectsExceptionInterface
      */
     public function post(string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = [], ?array $requestBodyArray = null): array;
+
+    /**
+     * @throws ConnectExceptionInterface
+     * @throws ParseJsonExceptionInterface
+     * @throws BadResponseExceptionInterface
+     * @throws TooManyRedirectsExceptionInterface
+     */
+    public function postForm(string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = [], array $requestBodyFormData = []): array;
 }

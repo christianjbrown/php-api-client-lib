@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace ChristianBrown\ApiClient;
 
-use ChristianBrown\ApiClient\Exception\Request\ConnectException;
-use ChristianBrown\ApiClient\Exception\Response\BadResponseException;
-use ChristianBrown\ApiClient\Exception\Response\TooManyRedirectsException;
+use ChristianBrown\ApiClient\Exception\Request\ConnectExceptionInterface;
+use ChristianBrown\ApiClient\Exception\Response\BadResponseExceptionInterface;
+use ChristianBrown\ApiClient\Exception\Response\TooManyRedirectsExceptionInterface;
 
 interface ApiRequestSenderInterface
 {
@@ -14,23 +14,23 @@ interface ApiRequestSenderInterface
     public const string METHOD_POST = 'POST';
 
     /**
-     * @throws ConnectException
-     * @throws BadResponseException
-     * @throws TooManyRedirectsException
+     * @throws ConnectExceptionInterface
+     * @throws BadResponseExceptionInterface
+     * @throws TooManyRedirectsExceptionInterface
      */
     public function get(string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = []): string;
 
     /**
-     * @throws ConnectException
-     * @throws BadResponseException
-     * @throws TooManyRedirectsException
+     * @throws ConnectExceptionInterface
+     * @throws BadResponseExceptionInterface
+     * @throws TooManyRedirectsExceptionInterface
      */
     public function post(string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = [], ?string $requestBody = null): string;
 
     /**
-     * @throws ConnectException
-     * @throws BadResponseException
-     * @throws TooManyRedirectsException
+     * @throws ConnectExceptionInterface
+     * @throws BadResponseExceptionInterface
+     * @throws TooManyRedirectsExceptionInterface
      */
-    public function postData(string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = [], array $requestBodyData = []): string;
+    public function postForm(string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = [], array $requestBodyFormData = []): string;
 }

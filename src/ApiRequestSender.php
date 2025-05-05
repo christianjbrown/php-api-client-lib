@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace ChristianBrown\ApiClient;
 
 use ChristianBrown\ApiClient\Exception\Request\ConnectException;
+use ChristianBrown\ApiClient\Exception\Request\ConnectExceptionInterface;
 use ChristianBrown\ApiClient\Exception\Response\BadResponseException;
+use ChristianBrown\ApiClient\Exception\Response\BadResponseExceptionInterface;
 use ChristianBrown\ApiClient\Exception\Response\TooManyRedirectsException;
+use ChristianBrown\ApiClient\Exception\Response\TooManyRedirectsExceptionInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\BadResponseException as GuzzleBadResponseException;
 use GuzzleHttp\Exception\ConnectException as GuzzleConnectException;
@@ -26,9 +29,9 @@ final class ApiRequestSender implements ApiRequestSenderInterface
     }
 
     /**
-     * @throws ConnectException
-     * @throws BadResponseException
-     * @throws TooManyRedirectsException
+     * @throws ConnectExceptionInterface
+     * @throws BadResponseExceptionInterface
+     * @throws TooManyRedirectsExceptionInterface
      */
     public function get(string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = []): string
     {
@@ -36,9 +39,9 @@ final class ApiRequestSender implements ApiRequestSenderInterface
     }
 
     /**
-     * @throws ConnectException
-     * @throws BadResponseException
-     * @throws TooManyRedirectsException
+     * @throws ConnectExceptionInterface
+     * @throws BadResponseExceptionInterface
+     * @throws TooManyRedirectsExceptionInterface
      */
     public function post(string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = [], ?string $requestBody = null): string
     {
@@ -46,22 +49,22 @@ final class ApiRequestSender implements ApiRequestSenderInterface
     }
 
     /**
-     * @throws ConnectException
-     * @throws BadResponseException
-     * @throws TooManyRedirectsException
+     * @throws ConnectExceptionInterface
+     * @throws BadResponseExceptionInterface
+     * @throws TooManyRedirectsExceptionInterface
      */
-    public function postData(string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = [], array $requestBodyData = []): string
+    public function postForm(string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = [], array $requestBodyFormData = []): string
     {
-        $requestBody = http_build_query($requestBodyData, '', '&');
+        $requestBody = http_build_query($requestBodyFormData, '', '&');
         $data = $this->post($requestUrl, $requestQueryStrings, $requestHeaders, $requestBody);
 
         return $data;
     }
 
     /**
-     * @throws ConnectException
-     * @throws BadResponseException
-     * @throws TooManyRedirectsException
+     * @throws ConnectExceptionInterface
+     * @throws BadResponseExceptionInterface
+     * @throws TooManyRedirectsExceptionInterface
      */
     private function sendRequest(string $method, string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = [], ?string $requestBody = null): string
     {
