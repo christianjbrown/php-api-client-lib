@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace ChristianBrown\ApiClient\Tests\Exception\Response;
 
-use ChristianBrown\ApiClient\Exception\Response\ResponseException;
-use ChristianBrown\ApiClient\Exception\Response\ResponseExceptionInterface;
+use ChristianBrown\ApiClient\Exception\Response\BadResponseException;
+use ChristianBrown\ApiClient\Exception\Response\BadResponseExceptionInterface;
 use GuzzleHttp\Exception\BadResponseException as GuzzleBadResponseException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\Exception;
@@ -14,8 +14,8 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
 
-#[CoversClass(ResponseException::class)]
-final class ResponseExceptionTest extends TestCase
+#[CoversClass(BadResponseException::class)]
+final class BadResponseExceptionTest extends TestCase
 {
     /**
      * @throws Exception
@@ -36,10 +36,10 @@ final class ResponseExceptionTest extends TestCase
         $guzzleBadResponseException->method('getResponse')
             ->willReturn($response);
 
-        $exception = new ResponseException($request, $guzzleBadResponseException);
+        $exception = new BadResponseException($request, $guzzleBadResponseException);
         self::assertSame($request, $exception->getRequest());
         self::assertSame($response, $exception->getResponse());
-        self::assertSame(sprintf(ResponseExceptionInterface::MESSAGE, 'https://test.com/', 42), $exception->getMessage());
+        self::assertSame(sprintf(BadResponseExceptionInterface::MESSAGE, 'https://test.com/', 42), $exception->getMessage());
         self::assertSame($guzzleBadResponseException, $exception->getPrevious());
     }
 }

@@ -5,18 +5,16 @@ declare(strict_types=1);
 namespace ChristianBrown\ApiClient\Exception\Parse;
 
 use JsonException;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 final class ParseJsonException extends AbstractParseException implements ParseJsonExceptionInterface
 {
     private JsonException $jsonException;
 
-    public function __construct(RequestInterface $request, ResponseInterface $response, JsonException $jsonException)
+    public function __construct(JsonException $jsonException, string $method, string $requestUrl, ?array $requestQueryStrings = [])
     {
-        $message = sprintf(self::MESSAGE, $jsonException->getMessage());
-        parent::__construct($request, $response, $message, $jsonException);
         $this->jsonException = $jsonException;
+        $message = sprintf(self::MESSAGE_SPRINTF, $method, $requestUrl, $jsonException->getMessage());
+        parent::__construct($message, $method, $requestUrl, $requestQueryStrings, $jsonException);
     }
 
     public function getJsonException(): JsonException

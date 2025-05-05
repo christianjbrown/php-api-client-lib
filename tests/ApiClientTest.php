@@ -6,9 +6,12 @@ namespace ChristianBrown\ApiClient\Tests;
 
 use ChristianBrown\ApiClient\ApiClient;
 use ChristianBrown\ApiClient\ApiRequestSender;
-use ChristianBrown\ApiClient\ApiRequestSenderInterface;
+use ChristianBrown\ApiClient\JsonApiRequestSender;
+use ChristianBrown\ApiClient\Transformer\ArrayToJsonTransformer;
 use ChristianBrown\ApiClient\Transformer\JsonToArrayTransformer;
-use ChristianBrown\ApiClient\Transformer\XmlToArrayTransformer;
+use ChristianBrown\ApiClient\Transformer\StringToXmlDocTransformer;
+use ChristianBrown\ApiClient\Transformer\XmlDocToStringTransformer;
+use ChristianBrown\ApiClient\XmlApiRequestSender;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
@@ -16,8 +19,12 @@ use Psr\Container\NotFoundExceptionInterface;
 
 #[CoversClass(ApiClient::class)]
 #[CoversClass(ApiRequestSender::class)]
+#[CoversClass(ArrayToJsonTransformer::class)]
+#[CoversClass(JsonApiRequestSender::class)]
 #[CoversClass(JsonToArrayTransformer::class)]
-#[CoversClass(XmlToArrayTransformer::class)]
+#[CoversClass(StringToXmlDocTransformer::class)]
+#[CoversClass(XmlApiRequestSender::class)]
+#[CoversClass(XmlDocToStringTransformer::class)]
 final class ApiClientTest extends TestCase
 {
     /**
@@ -28,10 +35,13 @@ final class ApiClientTest extends TestCase
     {
         $apiClient = new ApiClient();
 
-        $apiSenderJson = $apiClient->getApiRequestSenderForJson();
-        self::assertInstanceOf(ApiRequestSenderInterface::class, $apiSenderJson);
+        $apiRequestSender = $apiClient->getApiRequestSender();
+        self::assertInstanceOf(ApiRequestSender::class, $apiRequestSender);
 
-        $apiSenderXml = $apiClient->getApiRequestSenderForXml();
-        self::assertInstanceOf(ApiRequestSenderInterface::class, $apiSenderXml);
+        $jsonApiRequestSender = $apiClient->getJsonApiRequestSender();
+        self::assertInstanceOf(JsonApiRequestSender::class, $jsonApiRequestSender);
+
+        $xmlApiRequestSender = $apiClient->getXmlApiRequestSender();
+        self::assertInstanceOf(XmlApiRequestSender::class, $xmlApiRequestSender);
     }
 }

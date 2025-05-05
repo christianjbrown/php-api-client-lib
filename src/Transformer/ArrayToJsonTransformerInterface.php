@@ -6,10 +6,10 @@ namespace ChristianBrown\ApiClient\Transformer;
 
 use ChristianBrown\ApiClient\Exception\Parse\ParseJsonExceptionInterface;
 
-interface JsonToArrayTransformerInterface
+interface ArrayToJsonTransformerInterface
 {
     /**
      * @throws ParseJsonExceptionInterface
      */
-    public function transform(string $data, string $method, string $requestUrl, array $requestQueryStrings = []): array;
+    public function transform(array $data, string $method, string $requestUrl, array $requestQueryStrings = []): string;
 }

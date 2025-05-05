@@ -1,0 +1,59 @@
+<?php
+
+declare(strict_types=1);
+
+namespace ChristianBrown\ApiClient;
+
+use ChristianBrown\ApiClient\Exception\Parse\ParseXmlExceptionInterface;
+use ChristianBrown\ApiClient\Exception\Request\ConnectExceptionInterface;
+use ChristianBrown\ApiClient\Exception\Response\BadResponseExceptionInterface;
+use ChristianBrown\ApiClient\Exception\Response\TooManyRedirectsExceptionInterface;
+use ChristianBrown\ApiClient\Transformer\StringToXmlDocTransformerInterface;
+use ChristianBrown\ApiClient\Transformer\XmlDocToStringTransformerInterface;
+use DOMDocument;
+
+final class XmlApiRequestSender implements XmlApiRequestSenderInterface
+{
+    private ApiRequestSenderInterface $apiRequestSender;
+    private XmlDocToStringTransformerInterface $requestTransformer;
+    private StringToXmlDocTransformerInterface $responseTransformer;
+
+    public function __construct(ApiRequestSenderInterface $apiRequestSender, StringToXmlDocTransformerInterface $responseTransformer, XmlDocToStringTransformerInterface $requestTransformer)
+    {
+        $this->apiRequestSender = $apiRequestSender;
+        $this->responseTransformer = $responseTransformer;
+        $this->requestTransformer = $requestTransformer;
+    }
+
+    /**
+     * @throws ConnectExceptionInterface
+     * @throws ParseXmlExceptionInterface
+     * @throws BadResponseExceptionInterface
+     * @throws TooManyRedirectsExceptionInterface
+     */
+    public function get(string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = []): DOMDocument
+    {
+        $contents = $this->apiRequestSender->get($requestUrl, $requestQueryStrings, $requestHeaders);
+        $doc = $this->responseTransformer->transform($contents, ApiRequestSenderInterface::METHOD_GET, $requestUrl, $requestQueryStrings);
+
+        return $doc;
+    }
+
+    /**
+     * @throws ConnectExceptionInterface
+     * @throws ParseXmlExceptionInterface
+     * @throws BadResponseExceptionInterface
+     * @throws TooManyRedirectsExceptionInterface
+     */
+    public function post(string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = [], ?DOMDocument $requestDomDocument = null): DOMDocument
+    {
+        $requestBodyString = null;
+        if ($requestDomDocument instanceof DOMDocument) {
+            $requestBodyString = $this->requestTransformer->transform($requestDomDocument, ApiRequestSenderInterface::METHOD_POST, $requestUrl, $requestQueryStrings);
+        }
+        $contents = $this->apiRequestSender->post($requestUrl, $requestQueryStrings, $requestHeaders, $requestBodyString);
+        $doc = $this->responseTransformer->transform($contents, ApiRequestSenderInterface::METHOD_POST, $requestUrl, $requestQueryStrings);
+
+        return $doc;
+    }
+}

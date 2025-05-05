@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace ChristianBrown\ApiClient\Exception\Response;
 
+use ChristianBrown\ApiClient\Exception\ExceptionInterface;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-interface ResponseExceptionInterface extends AbstractResponseExceptionInterface
+interface ResponseExceptionInterface extends ExceptionInterface
 {
-    public const string MESSAGE = 'Connected to %s but received a non-successful response (HTTP Code %d).';
+    public function getRequest(): RequestInterface;
 
     public function getResponse(): ResponseInterface;
 }
