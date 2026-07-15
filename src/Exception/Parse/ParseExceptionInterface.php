@@ -10,6 +10,9 @@ interface ParseExceptionInterface extends ExceptionInterface
 {
     public function getMethod(): string;
 
+    /**
+     * @return null|array<string, string>
+     */
     public function getQueryStrings(): ?array;
 
     public function getUrl(): string;

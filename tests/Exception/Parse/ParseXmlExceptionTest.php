@@ -38,12 +38,45 @@ final class ParseXmlExceptionTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testMultipleErrors(): void
+    public function testMixedErrors(): void
     {
-        $error1 = $this->createMock(LibXMLError::class);
+        $error1 = self::createStub(LibXMLError::class);
         $error1->line = 42;
         $error1->message = 'test-error-1';
-        $error2 = $this->createMock(LibXMLError::class);
+        $errors = ['test-not-a-libxml-error', $error1];
+
+        $exception = new ParseXmlException($errors, 'test-method', 'test-url', ['test-query-string' => 'test-value']);
+        self::assertSame([$error1], $exception->getErrors());
+        self::assertSame('test-method', $exception->getMethod());
+        self::assertSame('test-url', $exception->getUrl());
+        self::assertSame(['test-query-string' => 'test-value'], $exception->getQueryStrings());
+
+        $errorsMessages = [];
+        foreach ([$error1] as $error) {
+            $errorsMessages[] = sprintf(
+                ParseXmlExceptionInterface::MESSAGE_ERROR_SPRINTF,
+                $error->line,
+                $error->message
+            );
+        }
+        $expectedMessage = sprintf(
+            ParseXmlExceptionInterface::MESSAGE_SPRINTF,
+            'test-method',
+            'test-url',
+            implode(ParseXmlExceptionInterface::MESSAGE_ERRORS_SEP, $errorsMessages)
+        );
+        self::assertSame($expectedMessage, $exception->getMessage());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testMultipleErrors(): void
+    {
+        $error1 = self::createStub(LibXMLError::class);
+        $error1->line = 42;
+        $error1->message = 'test-error-1';
+        $error2 = self::createStub(LibXMLError::class);
         $error2->line = 43;
         $error2->message = 'test-error-2';
         $errors = [$error1, $error2];
@@ -95,7 +128,7 @@ final class ParseXmlExceptionTest extends TestCase
      */
     public function testSingleError(): void
     {
-        $error1 = $this->createMock(LibXMLError::class);
+        $error1 = self::createStub(LibXMLError::class);
         $error1->line = 42;
         $error1->message = 'test-error-1';
         $errors = [$error1];

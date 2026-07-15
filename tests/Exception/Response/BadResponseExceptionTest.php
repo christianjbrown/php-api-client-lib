@@ -22,17 +22,17 @@ final class BadResponseExceptionTest extends TestCase
      */
     public function test(): void
     {
-        $requestUri = $this->createMock(UriInterface::class);
+        $requestUri = self::createStub(UriInterface::class);
         $requestUri->method('__toString')
             ->willReturn('https://test.com/');
-        $request = $this->createMock(RequestInterface::class);
+        $request = self::createStub(RequestInterface::class);
         $request->method('getUri')
             ->willReturn($requestUri);
 
-        $response = $this->createMock(ResponseInterface::class);
+        $response = self::createStub(ResponseInterface::class);
         $response->method('getStatusCode')
             ->willReturn(42);
-        $guzzleBadResponseException = $this->createMock(GuzzleBadResponseException::class);
+        $guzzleBadResponseException = self::createStub(GuzzleBadResponseException::class);
         $guzzleBadResponseException->method('getResponse')
             ->willReturn($response);
 

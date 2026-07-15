@@ -13,7 +13,7 @@ interface ParseXmlExceptionInterface extends ParseExceptionInterface
     public const string MESSAGE_SPRINTF = "XML parsing error(s) whilst %sing to %s:\n%s";
 
     /**
-     * @return LibXMLError[]
+     * @return array<int, LibXMLError>
      */
     public function getErrors(): array;
 }

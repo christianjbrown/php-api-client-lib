@@ -13,6 +13,10 @@ use DOMDocument;
 interface XmlApiRequestSenderInterface
 {
     /**
+     * @param string                $requestUrl          The request URL
+     * @param array<string, string> $requestQueryStrings
+     * @param array<string, string> $requestHeaders
+     *
      * @throws ConnectExceptionInterface
      * @throws ParseXmlExceptionInterface
      * @throws BadResponseExceptionInterface
@@ -21,6 +25,11 @@ interface XmlApiRequestSenderInterface
     public function get(string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = []): DOMDocument;
 
     /**
+     * @param string                $requestUrl          The request URL
+     * @param array<string, string> $requestQueryStrings
+     * @param array<string, string> $requestHeaders
+     * @param null|DOMDocument      $requestDomDocument  The request body document
+     *
      * @throws ConnectExceptionInterface
      * @throws ParseXmlExceptionInterface
      * @throws BadResponseExceptionInterface

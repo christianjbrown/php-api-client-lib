@@ -1,6 +1,6 @@
 # API Client
 
-This is library provides a simple request client for JSON and XML APIs. It is a wrapper around GuzzleHttp's `Client` class, that XML and JSON decodes responses back to an associative array, and provides common non-Guzzle specific exception classes to make it easier to catch and handle.
+This library provides a simple request client for JSON and XML APIs. It is a wrapper around GuzzleHttp's `Client` class that decodes responses — JSON to an `array`, XML to a `DOMDocument` — and provides common non-Guzzle specific exception classes to make it easier to catch and handle.
 
 
 
@@ -77,6 +77,39 @@ try {
     print $e->getMessage();
 }
 ```
+
+
+
+# :rotating_light: Error handling
+
+The main value-add of this library is that it catches Guzzle's transport-specific exceptions and
+re-throws framework-agnostic ones. Every exception this library throws implements
+`ChristianBrown\ApiClient\Exception\ExceptionInterface` (which extends `Throwable`), so a single
+`catch` handles all of them:
+
+```php
+use ChristianBrown\ApiClient\Exception\ExceptionInterface;
+
+try {
+    $data = $jsonApiRequestSender->get('url');
+} catch (ExceptionInterface $e) {
+    // any failure from this library
+    print $e->getMessage();
+}
+```
+
+To handle specific failure modes, catch the narrower interfaces (all extend `ExceptionInterface`):
+
+| Interface | Thrown when |
+| --- | --- |
+| `Exception\Request\ConnectExceptionInterface` | The request could not reach the host (DNS/connection failure). |
+| `Exception\Response\BadResponseExceptionInterface` | The API returned a non-2xx status. Exposes `getRequest()`, `getResponse()`; the exception code is the HTTP status. |
+| `Exception\Response\TooManyRedirectsExceptionInterface` | The request exceeded the redirect limit. |
+| `Exception\Parse\ParseJsonExceptionInterface` | A JSON request body could not be encoded, or a JSON response could not be decoded. |
+| `Exception\Parse\ParseXmlExceptionInterface` | An XML response could not be parsed. Exposes `getErrors()` (`LibXMLError[]`). |
+
+Request/response exceptions expose the PSR-7 `getRequest()` (and `getResponse()` for response
+errors); parse exceptions expose the failing `getMethod()`, `getUrl()`, and `getQueryStrings()`.
 
 
 

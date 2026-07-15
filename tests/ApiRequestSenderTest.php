@@ -36,6 +36,14 @@ use Throwable;
 final class ApiRequestSenderTest extends TestCase
 {
     /**
+     * @param string                            $function              The sender method to invoke
+     * @param array<int, mixed>                 $functionArgs
+     * @param string                            $expectedRequestMethod The expected HTTP request method
+     * @param array<string, array<int, string>> $expectedHeaders
+     * @param string                            $expectedRequestBody   The expected request body
+     * @param string                            $expectedRequestUrl    The expected request URL
+     * @param string                            $responseBodyContent   The stubbed response body content
+     *
      * @throws ConnectException
      * @throws Exception
      * @throws ParseJsonException
@@ -43,12 +51,12 @@ final class ApiRequestSenderTest extends TestCase
      * @throws BadResponseException
      * @throws TooManyRedirectsException
      */
-    #[TestWith(['get', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1']], ApiRequestSenderInterface::METHOD_GET, [['test-header-1']], '', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response', ['test-response-key-1' => 'test-response-value-1']])]
-    #[TestWith(['post', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1'], 'test-body'], ApiRequestSenderInterface::METHOD_POST, [['test-header-1']], 'test-body', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response', ['test-response-key-1' => 'test-response-value-1']])]
-    #[TestWith(['postForm', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1'], ['test-body-key-1' => 'test-body-value-1']], ApiRequestSenderInterface::METHOD_POST, [['test-header-1']], 'test-body-key-1=test-body-value-1', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response', ['test-response-key-1' => 'test-response-value-1']])]
+    #[TestWith(['get', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1']], ApiRequestSenderInterface::METHOD_GET, [['test-header-1']], '', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response'])]
+    #[TestWith(['post', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1'], 'test-body'], ApiRequestSenderInterface::METHOD_POST, [['test-header-1']], 'test-body', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response'])]
+    #[TestWith(['postForm', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1'], ['test-body-key-1' => 'test-body-value-1']], ApiRequestSenderInterface::METHOD_POST, [ApiRequestSenderInterface::HEADER_CONTENT_TYPE => [ApiRequestSenderInterface::CONTENT_TYPE_FORM_URLENCODED], ['test-header-1']], 'test-body-key-1=test-body-value-1', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response'])]
     public function testBadResponseException(string $function, array $functionArgs, string $expectedRequestMethod, array $expectedHeaders, string $expectedRequestBody, string $expectedRequestUrl, string $responseBodyContent): void
     {
-        $guzzleBadResponseException = $this->createMock(GuzzleBadResponseException::class);
+        $guzzleBadResponseException = self::createStub(GuzzleBadResponseException::class);
 
         $requestSender = $this->getRequestSenderForException($expectedRequestMethod, $expectedHeaders, $expectedRequestBody, $expectedRequestUrl, $responseBodyContent, $guzzleBadResponseException);
         $responseExceptionThrown = false;
@@ -73,6 +81,14 @@ final class ApiRequestSenderTest extends TestCase
     }
 
     /**
+     * @param string                            $function              The sender method to invoke
+     * @param array<int, mixed>                 $functionArgs
+     * @param string                            $expectedRequestMethod The expected HTTP request method
+     * @param array<string, array<int, string>> $expectedHeaders
+     * @param string                            $expectedRequestBody   The expected request body
+     * @param string                            $expectedRequestUrl    The expected request URL
+     * @param string                            $responseBodyContent   The stubbed response body content
+     *
      * @throws ConnectException
      * @throws Exception
      * @throws ParseJsonException
@@ -80,12 +96,12 @@ final class ApiRequestSenderTest extends TestCase
      * @throws BadResponseException
      * @throws TooManyRedirectsException
      */
-    #[TestWith(['get', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1']], ApiRequestSenderInterface::METHOD_GET, [['test-header-1']], '', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response', ['test-response-key-1' => 'test-response-value-1']])]
-    #[TestWith(['post', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1'], 'test-body'], ApiRequestSenderInterface::METHOD_POST, [['test-header-1']], 'test-body', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response', ['test-response-key-1' => 'test-response-value-1']])]
-    #[TestWith(['postForm', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1'], ['test-body-key-1' => 'test-body-value-1']], ApiRequestSenderInterface::METHOD_POST, [['test-header-1']], 'test-body-key-1=test-body-value-1', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response', ['test-response-key-1' => 'test-response-value-1']])]
+    #[TestWith(['get', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1']], ApiRequestSenderInterface::METHOD_GET, [['test-header-1']], '', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response'])]
+    #[TestWith(['post', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1'], 'test-body'], ApiRequestSenderInterface::METHOD_POST, [['test-header-1']], 'test-body', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response'])]
+    #[TestWith(['postForm', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1'], ['test-body-key-1' => 'test-body-value-1']], ApiRequestSenderInterface::METHOD_POST, [ApiRequestSenderInterface::HEADER_CONTENT_TYPE => [ApiRequestSenderInterface::CONTENT_TYPE_FORM_URLENCODED], ['test-header-1']], 'test-body-key-1=test-body-value-1', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response'])]
     public function testConnectException(string $function, array $functionArgs, string $expectedRequestMethod, array $expectedHeaders, string $expectedRequestBody, string $expectedRequestUrl, string $responseBodyContent): void
     {
-        $guzzleConnectException = $this->createMock(GuzzleConnectException::class);
+        $guzzleConnectException = self::createStub(GuzzleConnectException::class);
 
         $requestSender = $this->getRequestSenderForException($expectedRequestMethod, $expectedHeaders, $expectedRequestBody, $expectedRequestUrl, $responseBodyContent, $guzzleConnectException);
         $connectExceptionThrown = false;
@@ -110,6 +126,14 @@ final class ApiRequestSenderTest extends TestCase
     }
 
     /**
+     * @param string                            $function              The sender method to invoke
+     * @param array<int, mixed>                 $functionArgs
+     * @param string                            $expectedRequestMethod The expected HTTP request method
+     * @param array<string, array<int, string>> $expectedHeaders
+     * @param string                            $expectedRequestBody   The expected request body
+     * @param string                            $expectedRequestUrl    The expected request URL
+     * @param string                            $responseBodyContent   The stubbed response body content
+     *
      * @throws ConnectException
      * @throws Exception
      * @throws ParseJsonException
@@ -117,24 +141,26 @@ final class ApiRequestSenderTest extends TestCase
      * @throws BadResponseException
      * @throws TooManyRedirectsException
      */
-    #[TestWith(['get', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1']], ApiRequestSenderInterface::METHOD_GET, [['test-header-1']], '', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response', ['test-response-key-1' => 'test-response-value-1']])]
-    #[TestWith(['post', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1'], 'test-body'], ApiRequestSenderInterface::METHOD_POST, [['test-header-1']], 'test-body', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response', ['test-response-key-1' => 'test-response-value-1']])]
-    #[TestWith(['postForm', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1'], ['test-body-key-1' => 'test-body-value-1']], ApiRequestSenderInterface::METHOD_POST, [['test-header-1']], 'test-body-key-1=test-body-value-1', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response', ['test-response-key-1' => 'test-response-value-1']])]
+    #[TestWith(['get', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1']], ApiRequestSenderInterface::METHOD_GET, [['test-header-1']], '', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response'])]
+    #[TestWith(['get', ['test-url', [], ['test-header-1']], ApiRequestSenderInterface::METHOD_GET, [['test-header-1']], '', 'test-url', 'test-response'])]
+    #[TestWith(['post', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1'], 'test-body'], ApiRequestSenderInterface::METHOD_POST, [['test-header-1']], 'test-body', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response'])]
+    #[TestWith(['postForm', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1'], ['test-body-key-1' => 'test-body-value-1']], ApiRequestSenderInterface::METHOD_POST, [ApiRequestSenderInterface::HEADER_CONTENT_TYPE => [ApiRequestSenderInterface::CONTENT_TYPE_FORM_URLENCODED], ['test-header-1']], 'test-body-key-1=test-body-value-1', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response'])]
+    #[TestWith(['postForm', ['test-url', [], [ApiRequestSenderInterface::HEADER_CONTENT_TYPE => 'application/json'], ['test-body-key-1' => 'test-body-value-1']], ApiRequestSenderInterface::METHOD_POST, [ApiRequestSenderInterface::HEADER_CONTENT_TYPE => ['application/json']], 'test-body-key-1=test-body-value-1', 'test-url', 'test-response'])]
     public function testSuccess(string $function, array $functionArgs, string $expectedRequestMethod, array $expectedHeaders, string $expectedRequestBody, string $expectedRequestUrl, string $responseBodyContent): void
     {
-        $guzzle = $this->createMock(ClientInterface::class);
+        $guzzle = self::createStub(ClientInterface::class);
         $guzzle->method('send')
             ->willReturnCallback(
-                function (RequestInterface $request) use ($expectedRequestMethod, $expectedHeaders, $expectedRequestBody, $expectedRequestUrl, $responseBodyContent) {
+                static function (RequestInterface $request) use ($expectedRequestMethod, $expectedHeaders, $expectedRequestBody, $expectedRequestUrl, $responseBodyContent) {
                     self::assertSame($expectedRequestMethod, $request->getMethod());
                     self::assertSame($expectedHeaders, $request->getHeaders());
                     self::assertSame($expectedRequestBody, $request->getBody()->getContents());
                     self::assertSame($expectedRequestUrl, $request->getUri()->__toString());
 
-                    $responseSteam = $this->createMock(StreamInterface::class);
+                    $responseSteam = self::createStub(StreamInterface::class);
                     $responseSteam->method('getContents')
                         ->willReturn($responseBodyContent);
-                    $response = $this->createMock(ResponseInterface::class);
+                    $response = self::createStub(ResponseInterface::class);
                     $response->method('getStatusCode')
                         ->willReturn(42);
                     $response->method('getBody')
@@ -150,6 +176,14 @@ final class ApiRequestSenderTest extends TestCase
     }
 
     /**
+     * @param string                            $function              The sender method to invoke
+     * @param array<int, mixed>                 $functionArgs
+     * @param string                            $expectedRequestMethod The expected HTTP request method
+     * @param array<string, array<int, string>> $expectedHeaders
+     * @param string                            $expectedRequestBody   The expected request body
+     * @param string                            $expectedRequestUrl    The expected request URL
+     * @param string                            $responseBodyContent   The stubbed response body content
+     *
      * @throws ConnectException
      * @throws Exception
      * @throws ParseJsonException
@@ -157,13 +191,13 @@ final class ApiRequestSenderTest extends TestCase
      * @throws BadResponseException
      * @throws TooManyRedirectsException
      */
-    #[TestWith(['get', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1']], ApiRequestSenderInterface::METHOD_GET, [['test-header-1']], '', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response', ['test-response-key-1' => 'test-response-value-1']])]
-    #[TestWith(['post', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1'], 'test-body'], ApiRequestSenderInterface::METHOD_POST, [['test-header-1']], 'test-body', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response', ['test-response-key-1' => 'test-response-value-1']])]
-    #[TestWith(['postForm', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1'], ['test-body-key-1' => 'test-body-value-1']], ApiRequestSenderInterface::METHOD_POST, [['test-header-1']], 'test-body-key-1=test-body-value-1', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response', ['test-response-key-1' => 'test-response-value-1']])]
+    #[TestWith(['get', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1']], ApiRequestSenderInterface::METHOD_GET, [['test-header-1']], '', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response'])]
+    #[TestWith(['post', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1'], 'test-body'], ApiRequestSenderInterface::METHOD_POST, [['test-header-1']], 'test-body', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response'])]
+    #[TestWith(['postForm', ['test-url', ['test-query-string-key-1' => 'test-query-string-value-1'], ['test-header-1'], ['test-body-key-1' => 'test-body-value-1']], ApiRequestSenderInterface::METHOD_POST, [ApiRequestSenderInterface::HEADER_CONTENT_TYPE => [ApiRequestSenderInterface::CONTENT_TYPE_FORM_URLENCODED], ['test-header-1']], 'test-body-key-1=test-body-value-1', 'test-url?test-query-string-key-1=test-query-string-value-1', 'test-response'])]
     public function testTooManyRedirectsException(string $function, array $functionArgs, string $expectedRequestMethod, array $expectedHeaders, string $expectedRequestBody, string $expectedRequestUrl, string $responseBodyContent): void
     {
-        $response = $this->createMock(ResponseInterface::class);
-        $guzzleTooManyRedirectsException = $this->createMock(GuzzleTooManyRedirectsException::class);
+        $response = self::createStub(ResponseInterface::class);
+        $guzzleTooManyRedirectsException = self::createStub(GuzzleTooManyRedirectsException::class);
         $guzzleTooManyRedirectsException->method('getResponse')
             ->willReturn($response);
 
@@ -190,29 +224,38 @@ final class ApiRequestSenderTest extends TestCase
     }
 
     /**
+     * @param string                            $expectedRequestMethod The expected HTTP request method
+     * @param array<string, array<int, string>> $expectedHeaders
+     * @param string                            $expectedRequestBody   The expected request body
+     * @param string                            $expectedRequestUrl    The expected request URL
+     * @param string                            $responseBodyContent   The stubbed response body content
+     * @param null|Throwable                    $throwException        The exception the Guzzle client should throw
+     *
      * @throws Exception
      */
     private function getRequestSenderForException(string $expectedRequestMethod, array $expectedHeaders, string $expectedRequestBody, string $expectedRequestUrl, string $responseBodyContent, ?Throwable $throwException = null): ApiRequestSenderInterface
     {
-        $guzzle = $this->createMock(ClientInterface::class);
+        $guzzle = self::createStub(ClientInterface::class);
         $guzzle->method('send')
             ->willReturnCallback(
-                function (RequestInterface $request) use ($expectedRequestMethod, $expectedHeaders, $expectedRequestBody, $expectedRequestUrl, $responseBodyContent, $throwException): void {
+                static function (RequestInterface $request) use ($expectedRequestMethod, $expectedHeaders, $expectedRequestBody, $expectedRequestUrl, $responseBodyContent, $throwException): void {
                     self::assertSame($expectedRequestMethod, $request->getMethod());
                     self::assertSame($expectedHeaders, $request->getHeaders());
                     self::assertSame($expectedRequestBody, $request->getBody()->getContents());
                     self::assertSame($expectedRequestUrl, $request->getUri()->__toString());
 
-                    $responseSteam = $this->createMock(StreamInterface::class);
+                    $responseSteam = self::createStub(StreamInterface::class);
                     $responseSteam->method('getContents')
                         ->willReturn($responseBodyContent);
-                    $response = $this->createMock(ResponseInterface::class);
+                    $response = self::createStub(ResponseInterface::class);
                     $response->method('getStatusCode')
                         ->willReturn(42);
                     $response->method('getBody')
                         ->willReturn($responseSteam);
 
-                    throw $throwException;
+                    if (null !== $throwException) {
+                        throw $throwException;
+                    }
                 }
             );
 

@@ -23,8 +23,9 @@ final class XmlApiRequestSenderTest extends TestCase
     {
         $responseDoc = new DOMDocument();
 
-        $apiRequestSender = $this->createMock(ApiRequestSenderInterface::class);
-        $apiRequestSender->method('get')
+        $apiRequestSender = self::createMock(ApiRequestSenderInterface::class);
+        $apiRequestSender->expects(self::once())
+            ->method('get')
             ->with(
                 'test-url',
                 ['test-query-string' => 'test-value'],
@@ -32,8 +33,9 @@ final class XmlApiRequestSenderTest extends TestCase
             )
             ->willReturn('test-response');
 
-        $responseTransformer = $this->createMock(StringToXmlDocTransformerInterface::class);
-        $responseTransformer->method('transform')
+        $responseTransformer = self::createMock(StringToXmlDocTransformerInterface::class);
+        $responseTransformer->expects(self::once())
+            ->method('transform')
             ->with(
                 'test-response',
                 ApiRequestSenderInterface::METHOD_GET,
@@ -42,7 +44,7 @@ final class XmlApiRequestSenderTest extends TestCase
             )
             ->willReturn($responseDoc);
 
-        $requestTransformer = $this->createMock(XmlDocToStringTransformerInterface::class);
+        $requestTransformer = self::createStub(XmlDocToStringTransformerInterface::class);
         $xmlApiRequestSender = new XmlApiRequestSender($apiRequestSender, $responseTransformer, $requestTransformer);
         $actual = $xmlApiRequestSender->get('test-url', ['test-query-string' => 'test-value'], ['test-header' => 'test-value']);
 
@@ -57,8 +59,9 @@ final class XmlApiRequestSenderTest extends TestCase
         $requestDoc = new DOMDocument();
         $responseDoc = new DOMDocument();
 
-        $apiRequestSender = $this->createMock(ApiRequestSenderInterface::class);
-        $apiRequestSender->method('post')
+        $apiRequestSender = self::createMock(ApiRequestSenderInterface::class);
+        $apiRequestSender->expects(self::once())
+            ->method('post')
             ->with(
                 'test-url',
                 ['test-query-string' => 'test-value'],
@@ -67,8 +70,9 @@ final class XmlApiRequestSenderTest extends TestCase
             )
             ->willReturn('test-response');
 
-        $responseTransformer = $this->createMock(StringToXmlDocTransformerInterface::class);
-        $responseTransformer->method('transform')
+        $responseTransformer = self::createMock(StringToXmlDocTransformerInterface::class);
+        $responseTransformer->expects(self::once())
+            ->method('transform')
             ->with(
                 'test-response',
                 ApiRequestSenderInterface::METHOD_POST,
@@ -77,8 +81,9 @@ final class XmlApiRequestSenderTest extends TestCase
             )
             ->willReturn($responseDoc);
 
-        $requestTransformer = $this->createMock(XmlDocToStringTransformerInterface::class);
-        $requestTransformer->method('transform')
+        $requestTransformer = self::createMock(XmlDocToStringTransformerInterface::class);
+        $requestTransformer->expects(self::once())
+            ->method('transform')
             ->with(
                 $requestDoc,
                 ApiRequestSenderInterface::METHOD_POST,
@@ -89,6 +94,42 @@ final class XmlApiRequestSenderTest extends TestCase
 
         $xmlApiRequestSender = new XmlApiRequestSender($apiRequestSender, $responseTransformer, $requestTransformer);
         $actual = $xmlApiRequestSender->post('test-url', ['test-query-string' => 'test-value'], ['test-header' => 'test-value'], $requestDoc);
+
+        self::assertSame($responseDoc, $actual);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testPostWithoutDocument(): void
+    {
+        $responseDoc = new DOMDocument();
+
+        $apiRequestSender = self::createMock(ApiRequestSenderInterface::class);
+        $apiRequestSender->expects(self::once())
+            ->method('post')
+            ->with(
+                'test-url',
+                ['test-query-string' => 'test-value'],
+                ['test-header' => 'test-value'],
+                null
+            )
+            ->willReturn('test-response');
+
+        $responseTransformer = self::createMock(StringToXmlDocTransformerInterface::class);
+        $responseTransformer->expects(self::once())
+            ->method('transform')
+            ->with(
+                'test-response',
+                ApiRequestSenderInterface::METHOD_POST,
+                'test-url',
+                ['test-query-string' => 'test-value'],
+            )
+            ->willReturn($responseDoc);
+
+        $requestTransformer = self::createStub(XmlDocToStringTransformerInterface::class);
+        $xmlApiRequestSender = new XmlApiRequestSender($apiRequestSender, $responseTransformer, $requestTransformer);
+        $actual = $xmlApiRequestSender->post('test-url', ['test-query-string' => 'test-value'], ['test-header' => 'test-value']);
 
         self::assertSame($responseDoc, $actual);
     }

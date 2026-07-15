@@ -10,6 +10,12 @@ final class ParseJsonException extends AbstractParseException implements ParseJs
 {
     private JsonException $jsonException;
 
+    /**
+     * @param JsonException              $jsonException       The originating JSON exception
+     * @param string                     $method              The HTTP method used for the request
+     * @param string                     $requestUrl          The request URL
+     * @param null|array<string, string> $requestQueryStrings
+     */
     public function __construct(JsonException $jsonException, string $method, string $requestUrl, ?array $requestQueryStrings = [])
     {
         $this->jsonException = $jsonException;

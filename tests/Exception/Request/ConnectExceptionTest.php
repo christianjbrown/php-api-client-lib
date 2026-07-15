@@ -21,10 +21,10 @@ final class ConnectExceptionTest extends TestCase
      */
     public function test(): void
     {
-        $requestUri = $this->createMock(UriInterface::class);
+        $requestUri = self::createStub(UriInterface::class);
         $requestUri->method('__toString')
             ->willReturn('https://test.com/');
-        $request = $this->createMock(RequestInterface::class);
+        $request = self::createStub(RequestInterface::class);
         $request->method('getUri')
             ->willReturn($requestUri);
         $previousException = new RuntimeException('test-previous-exception');
