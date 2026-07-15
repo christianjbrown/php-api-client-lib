@@ -10,13 +10,12 @@ use ChristianBrown\ApiClient\Transformer\StringToXmlDocTransformer;
 use ChristianBrown\ApiClient\Transformer\XmlDocToStringTransformer;
 use GuzzleHttp\Client;
 use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 final class ApiClient implements ApiClientInterface
 {
-    private ContainerInterface $container;
+    private ContainerBuilder $container;
 
     public function __construct()
     {
@@ -30,7 +29,12 @@ final class ApiClient implements ApiClientInterface
      */
     public function getApiRequestSender(): ApiRequestSenderInterface
     {
-        return $this->container->get('christianbrown.api_client.api_request_sender');
+        /**
+         * @var ApiRequestSenderInterface $service
+         */
+        $service = $this->container->get(self::SERVICE_API_REQUEST_SENDER);
+
+        return $service;
     }
 
     /**
@@ -39,7 +43,12 @@ final class ApiClient implements ApiClientInterface
      */
     public function getJsonApiRequestSender(): JsonApiRequestSenderInterface
     {
-        return $this->container->get('christianbrown.api_client.json_api_request_sender');
+        /**
+         * @var JsonApiRequestSenderInterface $service
+         */
+        $service = $this->container->get(self::SERVICE_JSON_API_REQUEST_SENDER);
+
+        return $service;
     }
 
     /**
@@ -48,40 +57,45 @@ final class ApiClient implements ApiClientInterface
      */
     public function getXmlApiRequestSender(): XmlApiRequestSenderInterface
     {
-        return $this->container->get('christianbrown.api_client.xml_api_request_sender');
+        /**
+         * @var XmlApiRequestSenderInterface $service
+         */
+        $service = $this->container->get(self::SERVICE_XML_API_REQUEST_SENDER);
+
+        return $service;
     }
 
     private function init(): void
     {
-        $this->container->register('guzzle_http.client', Client::class);
+        $this->container->register(self::SERVICE_GUZZLE_CLIENT, Client::class);
 
-        $this->container->register('christianbrown.api_client.transformer.array_to_json_transformer', ArrayToJsonTransformer::class);
-        $this->container->register('christianbrown.api_client.transformer.json_to_array_transformer', JsonToArrayTransformer::class);
-        $this->container->register('christianbrown.api_client.transformer.string_to_xml_doc_transformer', StringToXmlDocTransformer::class);
-        $this->container->register('christianbrown.api_client.transformer.xml_doc_to_string_transformer', XmlDocToStringTransformer::class);
+        $this->container->register(self::SERVICE_TRANSFORMER_ARRAY_TO_JSON, ArrayToJsonTransformer::class);
+        $this->container->register(self::SERVICE_TRANSFORMER_JSON_TO_ARRAY, JsonToArrayTransformer::class);
+        $this->container->register(self::SERVICE_TRANSFORMER_STRING_TO_XML_DOC, StringToXmlDocTransformer::class);
+        $this->container->register(self::SERVICE_TRANSFORMER_XML_DOC_TO_STRING, XmlDocToStringTransformer::class);
 
-        $this->container->register('christianbrown.api_client.api_request_sender', ApiRequestSender::class)
+        $this->container->register(self::SERVICE_API_REQUEST_SENDER, ApiRequestSender::class)
             ->setArguments(
                 [
-                    $this->container->getDefinition('guzzle_http.client'),
+                    $this->container->getDefinition(self::SERVICE_GUZZLE_CLIENT),
                 ]
             );
 
-        $this->container->register('christianbrown.api_client.json_api_request_sender', JsonApiRequestSender::class)
+        $this->container->register(self::SERVICE_JSON_API_REQUEST_SENDER, JsonApiRequestSender::class)
             ->setArguments(
                 [
-                    $this->container->getDefinition('christianbrown.api_client.api_request_sender'),
-                    $this->container->getDefinition('christianbrown.api_client.transformer.json_to_array_transformer'),
-                    $this->container->getDefinition('christianbrown.api_client.transformer.array_to_json_transformer'),
+                    $this->container->getDefinition(self::SERVICE_API_REQUEST_SENDER),
+                    $this->container->getDefinition(self::SERVICE_TRANSFORMER_JSON_TO_ARRAY),
+                    $this->container->getDefinition(self::SERVICE_TRANSFORMER_ARRAY_TO_JSON),
                 ]
             );
 
-        $this->container->register('christianbrown.api_client.xml_api_request_sender', XmlApiRequestSender::class)
+        $this->container->register(self::SERVICE_XML_API_REQUEST_SENDER, XmlApiRequestSender::class)
             ->setArguments(
                 [
-                    $this->container->getDefinition('christianbrown.api_client.api_request_sender'),
-                    $this->container->getDefinition('christianbrown.api_client.transformer.string_to_xml_doc_transformer'),
-                    $this->container->getDefinition('christianbrown.api_client.transformer.xml_doc_to_string_transformer'),
+                    $this->container->getDefinition(self::SERVICE_API_REQUEST_SENDER),
+                    $this->container->getDefinition(self::SERVICE_TRANSFORMER_STRING_TO_XML_DOC),
+                    $this->container->getDefinition(self::SERVICE_TRANSFORMER_XML_DOC_TO_STRING),
                 ]
             );
     }

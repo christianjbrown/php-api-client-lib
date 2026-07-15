@@ -26,6 +26,10 @@ final class XmlApiRequestSender implements XmlApiRequestSenderInterface
     }
 
     /**
+     * @param string                $requestUrl          The request URL
+     * @param array<string, string> $requestQueryStrings
+     * @param array<string, string> $requestHeaders
+     *
      * @throws ConnectExceptionInterface
      * @throws ParseXmlExceptionInterface
      * @throws BadResponseExceptionInterface
@@ -40,6 +44,11 @@ final class XmlApiRequestSender implements XmlApiRequestSenderInterface
     }
 
     /**
+     * @param string                $requestUrl          The request URL
+     * @param array<string, string> $requestQueryStrings
+     * @param array<string, string> $requestHeaders
+     * @param null|DOMDocument      $requestDomDocument  The request body document
+     *
      * @throws ConnectExceptionInterface
      * @throws ParseXmlExceptionInterface
      * @throws BadResponseExceptionInterface

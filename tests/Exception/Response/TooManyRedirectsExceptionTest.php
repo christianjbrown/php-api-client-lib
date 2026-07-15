@@ -22,23 +22,48 @@ final class TooManyRedirectsExceptionTest extends TestCase
      */
     public function test(): void
     {
-        $requestUri = $this->createMock(UriInterface::class);
+        $requestUri = self::createStub(UriInterface::class);
         $requestUri->method('__toString')
             ->willReturn('https://test.com/');
-        $request = $this->createMock(RequestInterface::class);
+        $request = self::createStub(RequestInterface::class);
         $request->method('getUri')
             ->willReturn($requestUri);
 
-        $response = $this->createMock(ResponseInterface::class);
+        $response = self::createStub(ResponseInterface::class);
         $response->method('getStatusCode')
             ->willReturn(42);
-        $guzzleTooManyRedirectsException = $this->createMock(GuzzleTooManyRedirectsException::class);
+        $guzzleTooManyRedirectsException = self::createStub(GuzzleTooManyRedirectsException::class);
         $guzzleTooManyRedirectsException->method('getResponse')
             ->willReturn($response);
 
         $exception = new TooManyRedirectsException($request, $guzzleTooManyRedirectsException);
         self::assertSame($request, $exception->getRequest());
         self::assertSame($response, $exception->getResponse());
+        self::assertSame(sprintf(TooManyRedirectsExceptionInterface::MESSAGE, 'https://test.com/'), $exception->getMessage());
+        self::assertSame($guzzleTooManyRedirectsException, $exception->getPrevious());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testWithoutResponse(): void
+    {
+        $requestUri = self::createStub(UriInterface::class);
+        $requestUri->method('__toString')
+            ->willReturn('https://test.com/');
+        $request = self::createStub(RequestInterface::class);
+        $request->method('getUri')
+            ->willReturn($requestUri);
+
+        $guzzleTooManyRedirectsException = self::createStub(GuzzleTooManyRedirectsException::class);
+        $guzzleTooManyRedirectsException->method('getResponse')
+            ->willReturn(null);
+
+        $exception = new TooManyRedirectsException($request, $guzzleTooManyRedirectsException);
+        self::assertSame($request, $exception->getRequest());
+        self::assertInstanceOf(ResponseInterface::class, $exception->getResponse());
+        self::assertSame(TooManyRedirectsExceptionInterface::STATUS_CODE_TOO_MANY_REDIRECTS, $exception->getResponse()->getStatusCode());
+        self::assertSame(TooManyRedirectsExceptionInterface::STATUS_CODE_TOO_MANY_REDIRECTS, $exception->getCode());
         self::assertSame(sprintf(TooManyRedirectsExceptionInterface::MESSAGE, 'https://test.com/'), $exception->getMessage());
         self::assertSame($guzzleTooManyRedirectsException, $exception->getPrevious());
     }

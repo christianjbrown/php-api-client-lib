@@ -10,7 +10,10 @@ use ChristianBrown\ApiClient\Exception\Parse\ParseXmlException;
 use ChristianBrown\ApiClient\Exception\Parse\ParseXmlExceptionInterface;
 use ChristianBrown\ApiClient\Transformer\StringToXmlDocTransformer;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
+
+use function libxml_use_internal_errors;
 
 #[CoversClass(AbstractException::class)]
 #[CoversClass(AbstractParseException::class)]
@@ -49,5 +52,27 @@ final class StringToXmlDocTransformerTest extends TestCase
             self::assertSame(['test-query-string' => 'test-value'], $e->getQueryStrings());
         }
         self::assertTrue($parseXmlExceptionThrown);
+    }
+
+    #[TestWith(['<xml><valid/></xml>'])]
+    #[TestWith(['<xml><test-invalid-xml'])]
+    public function testRestoresLibxmlInternalErrorsState(string $xml): void
+    {
+        $previous = libxml_use_internal_errors(false);
+
+        try {
+            $transformer = new StringToXmlDocTransformer();
+
+            try {
+                $transformer->transform($xml, 'test-method', 'test-url');
+            } catch (ParseXmlExceptionInterface) {
+                // The failure path must restore state just like the success path.
+            }
+
+            // transform() flipped internal error handling on; it must have restored our prior value.
+            self::assertFalse(libxml_use_internal_errors(false));
+        } finally {
+            libxml_use_internal_errors($previous);
+        }
     }
 }

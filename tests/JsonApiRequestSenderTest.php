@@ -28,8 +28,9 @@ final class JsonApiRequestSenderTest extends TestCase
      */
     public function testGet(): void
     {
-        $apiRequestSender = $this->createMock(ApiRequestSenderInterface::class);
-        $apiRequestSender->method('get')
+        $apiRequestSender = self::createMock(ApiRequestSenderInterface::class);
+        $apiRequestSender->expects(self::once())
+            ->method('get')
             ->with(
                 'test-url',
                 ['test-query-string' => 'test-value'],
@@ -37,8 +38,9 @@ final class JsonApiRequestSenderTest extends TestCase
             )
             ->willReturn('test-response');
 
-        $responseTransformer = $this->createMock(JsonToArrayTransformerInterface::class);
-        $responseTransformer->method('transform')
+        $responseTransformer = self::createMock(JsonToArrayTransformerInterface::class);
+        $responseTransformer->expects(self::once())
+            ->method('transform')
             ->with(
                 'test-response',
                 ApiRequestSenderInterface::METHOD_GET,
@@ -47,7 +49,7 @@ final class JsonApiRequestSenderTest extends TestCase
             )
             ->willReturn(['test-response-array']);
 
-        $requestTransformer = $this->createMock(ArrayToJsonTransformerInterface::class);
+        $requestTransformer = self::createStub(ArrayToJsonTransformerInterface::class);
         $jsonApiRequestSender = new JsonApiRequestSender($apiRequestSender, $responseTransformer, $requestTransformer);
         $actual = $jsonApiRequestSender->get('test-url', ['test-query-string' => 'test-value'], ['test-header' => 'test-value']);
 
@@ -63,8 +65,9 @@ final class JsonApiRequestSenderTest extends TestCase
      */
     public function testPost(): void
     {
-        $apiRequestSender = $this->createMock(ApiRequestSenderInterface::class);
-        $apiRequestSender->method('post')
+        $apiRequestSender = self::createMock(ApiRequestSenderInterface::class);
+        $apiRequestSender->expects(self::once())
+            ->method('post')
             ->with(
                 'test-url',
                 ['test-query-string' => 'test-value'],
@@ -73,8 +76,9 @@ final class JsonApiRequestSenderTest extends TestCase
             )
             ->willReturn('test-response');
 
-        $responseTransformer = $this->createMock(JsonToArrayTransformerInterface::class);
-        $responseTransformer->method('transform')
+        $responseTransformer = self::createMock(JsonToArrayTransformerInterface::class);
+        $responseTransformer->expects(self::once())
+            ->method('transform')
             ->with(
                 'test-response',
                 ApiRequestSenderInterface::METHOD_POST,
@@ -83,8 +87,9 @@ final class JsonApiRequestSenderTest extends TestCase
             )
             ->willReturn(['test-response-array']);
 
-        $requestTransformer = $this->createMock(ArrayToJsonTransformerInterface::class);
-        $requestTransformer->method('transform')
+        $requestTransformer = self::createMock(ArrayToJsonTransformerInterface::class);
+        $requestTransformer->expects(self::once())
+            ->method('transform')
             ->with(
                 ['test-request-array'],
                 ApiRequestSenderInterface::METHOD_POST,
@@ -108,18 +113,20 @@ final class JsonApiRequestSenderTest extends TestCase
      */
     public function testPostForm(): void
     {
-        $apiRequestSender = $this->createMock(ApiRequestSenderInterface::class);
-        $apiRequestSender->method('postForm')
+        $apiRequestSender = self::createMock(ApiRequestSenderInterface::class);
+        $apiRequestSender->expects(self::once())
+            ->method('postForm')
             ->with(
                 'test-url',
                 ['test-query-string' => 'test-value'],
                 ['test-header' => 'test-value'],
-                ['test-form-data']
+                ['test-form-data-key' => 'test-form-data']
             )
             ->willReturn('test-response');
 
-        $responseTransformer = $this->createMock(JsonToArrayTransformerInterface::class);
-        $responseTransformer->method('transform')
+        $responseTransformer = self::createMock(JsonToArrayTransformerInterface::class);
+        $responseTransformer->expects(self::once())
+            ->method('transform')
             ->with(
                 'test-response',
                 ApiRequestSenderInterface::METHOD_POST,
@@ -128,10 +135,49 @@ final class JsonApiRequestSenderTest extends TestCase
             )
             ->willReturn(['test-response-array']);
 
-        $requestTransformer = $this->createMock(ArrayToJsonTransformerInterface::class);
+        $requestTransformer = self::createStub(ArrayToJsonTransformerInterface::class);
 
         $jsonApiRequestSender = new JsonApiRequestSender($apiRequestSender, $responseTransformer, $requestTransformer);
-        $actual = $jsonApiRequestSender->postForm('test-url', ['test-query-string' => 'test-value'], ['test-header' => 'test-value'], ['test-form-data']);
+        $actual = $jsonApiRequestSender->postForm('test-url', ['test-query-string' => 'test-value'], ['test-header' => 'test-value'], ['test-form-data-key' => 'test-form-data']);
+
+        self::assertSame(['test-response-array'], $actual);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ParseJsonExceptionInterface
+     * @throws ConnectExceptionInterface
+     * @throws BadResponseExceptionInterface
+     * @throws TooManyRedirectsExceptionInterface
+     */
+    public function testPostWithoutBody(): void
+    {
+        $apiRequestSender = self::createMock(ApiRequestSenderInterface::class);
+        $apiRequestSender->expects(self::once())
+            ->method('post')
+            ->with(
+                'test-url',
+                ['test-query-string' => 'test-value'],
+                ['test-header' => 'test-value'],
+                null
+            )
+            ->willReturn('test-response');
+
+        $responseTransformer = self::createMock(JsonToArrayTransformerInterface::class);
+        $responseTransformer->expects(self::once())
+            ->method('transform')
+            ->with(
+                'test-response',
+                ApiRequestSenderInterface::METHOD_POST,
+                'test-url',
+                ['test-query-string' => 'test-value'],
+            )
+            ->willReturn(['test-response-array']);
+
+        $requestTransformer = self::createStub(ArrayToJsonTransformerInterface::class);
+
+        $jsonApiRequestSender = new JsonApiRequestSender($apiRequestSender, $responseTransformer, $requestTransformer);
+        $actual = $jsonApiRequestSender->post('test-url', ['test-query-string' => 'test-value'], ['test-header' => 'test-value']);
 
         self::assertSame(['test-response-array'], $actual);
     }

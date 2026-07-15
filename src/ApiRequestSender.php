@@ -16,6 +16,7 @@ use GuzzleHttp\Exception\ConnectException as GuzzleConnectException;
 use GuzzleHttp\Exception\TooManyRedirectsException as GuzzleTooManyRedirectsException;
 use GuzzleHttp\Psr7\Request;
 
+use function array_merge;
 use function http_build_query;
 use function sprintf;
 
@@ -29,6 +30,10 @@ final class ApiRequestSender implements ApiRequestSenderInterface
     }
 
     /**
+     * @param string                $requestUrl          The request URL
+     * @param array<string, string> $requestQueryStrings
+     * @param array<string, string> $requestHeaders
+     *
      * @throws ConnectExceptionInterface
      * @throws BadResponseExceptionInterface
      * @throws TooManyRedirectsExceptionInterface
@@ -39,6 +44,11 @@ final class ApiRequestSender implements ApiRequestSenderInterface
     }
 
     /**
+     * @param string                $requestUrl          The request URL
+     * @param array<string, string> $requestQueryStrings
+     * @param array<string, string> $requestHeaders
+     * @param null|string           $requestBody         The raw request body
+     *
      * @throws ConnectExceptionInterface
      * @throws BadResponseExceptionInterface
      * @throws TooManyRedirectsExceptionInterface
@@ -49,6 +59,11 @@ final class ApiRequestSender implements ApiRequestSenderInterface
     }
 
     /**
+     * @param string                $requestUrl          The request URL
+     * @param array<string, string> $requestQueryStrings
+     * @param array<string, string> $requestHeaders
+     * @param array<string, string> $requestBodyFormData
+     *
      * @throws ConnectExceptionInterface
      * @throws BadResponseExceptionInterface
      * @throws TooManyRedirectsExceptionInterface
@@ -56,12 +71,20 @@ final class ApiRequestSender implements ApiRequestSenderInterface
     public function postForm(string $requestUrl, array $requestQueryStrings = [], array $requestHeaders = [], array $requestBodyFormData = []): string
     {
         $requestBody = http_build_query($requestBodyFormData, '', '&');
+        // Default the form content type, but let a caller-supplied header win.
+        $requestHeaders = array_merge([self::HEADER_CONTENT_TYPE => self::CONTENT_TYPE_FORM_URLENCODED], $requestHeaders);
         $data = $this->post($requestUrl, $requestQueryStrings, $requestHeaders, $requestBody);
 
         return $data;
     }
 
     /**
+     * @param string                $method              The HTTP method used for the request
+     * @param string                $requestUrl          The request URL
+     * @param array<string, string> $requestQueryStrings
+     * @param array<string, string> $requestHeaders
+     * @param null|string           $requestBody         The raw request body
+     *
      * @throws ConnectExceptionInterface
      * @throws BadResponseExceptionInterface
      * @throws TooManyRedirectsExceptionInterface

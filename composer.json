@@ -1,6 +1,10 @@
 {
     "name": "christianjbrown/php-api-client-lib",
+    "description": "A thin, strongly-typed PHP 8.3+ client for JSON and XML APIs that wraps GuzzleHttp and normalizes its exceptions into a single, framework-agnostic hierarchy.",
     "type": "library",
+    "license": "MIT",
+    "keywords": ["api", "client", "http", "json", "xml", "guzzle"],
+    "authors": [{ "name": "Christian Brown" }],
     "require": {
         "php": "^8.3",
         "guzzlehttp/guzzle": "^7.9",
@@ -11,6 +15,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^12.0",
+        "phpstan/phpstan": "^2.0",
         "christianjbrown/php-code-quality-scripts": "dev-main"
     },
     "config": {
@@ -21,11 +26,16 @@
         "check-style-diff": ["clear && ./bin/php-cs-diff"],
         "fix-style": ["clear && ./bin/php-cs-fix ./src ./tests"],
         "fix-style-diff": ["clear && ./bin/php-cs-fix-diff"],
-        "test": ["clear && XDEBUG_MODE=coverage ./bin/phpunit -d memory_limit=512M && open ./.phpunit.cache/code-coverage-html/index.html"]
+        "stan": ["clear && ./bin/phpstan analyse"],
+        "test": ["clear && XDEBUG_MODE=coverage ./bin/phpunit -d memory_limit=-1 && open ./.phpunit.cache/code-coverage-html/index.html"]
     },
     "autoload": {
         "psr-4": {
-            "ChristianBrown\\ApiClient\\": "src/",
+            "ChristianBrown\\ApiClient\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
             "ChristianBrown\\ApiClient\\Tests\\": "tests/"
         }
     },

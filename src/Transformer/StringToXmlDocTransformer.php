@@ -15,17 +15,26 @@ use function libxml_use_internal_errors;
 final class StringToXmlDocTransformer implements StringToXmlDocTransformerInterface
 {
     /**
+     * @param string                $string              The XML string to parse
+     * @param string                $method              The HTTP method used for the request
+     * @param string                $requestUrl          The request URL
+     * @param array<string, string> $requestQueryStrings
+     *
      * @throws ParseXmlExceptionInterface
      */
     public function transform(string $string, string $method, string $requestUrl, array $requestQueryStrings = []): DOMDocument
     {
-        libxml_use_internal_errors(true);
+        // libxml_use_internal_errors() mutates process-global state and returns its prior value;
+        // capture it and restore it unconditionally so parsing here can't leak error handling into
+        // the rest of the host application.
+        $previousUseInternalErrors = libxml_use_internal_errors(true);
         $doc = new DOMDocument();
         $success = $doc->loadXML($string);
-        if (!$success) {
-            $errors = libxml_get_errors();
-            libxml_clear_errors();
+        $errors = libxml_get_errors();
+        libxml_clear_errors();
+        libxml_use_internal_errors($previousUseInternalErrors);
 
+        if (!$success) {
             throw new ParseXmlException($errors, $method, $requestUrl, $requestQueryStrings);
         }
 
